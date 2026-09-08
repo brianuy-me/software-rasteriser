@@ -1,0 +1,7 @@
+# cmake generated
+build/
+install/
+
+# configurations settings
+.vscode/
+.vs/
