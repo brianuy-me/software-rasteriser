@@ -25,9 +25,9 @@ target_sources(app PRIVATE
 
 target_include_directories(app PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_compile_features(app PRIVATE c_std_17)
-target_compile_options(app PRIVATE 
-	$<$<CXX_COMPILER_ID:MSVC>:/W4 /utf-8 /permissive->
-	$<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>
+target_compile_options(app PRIVATE
+    $<$<C_COMPILER_ID:MSVC>:/W4 /utf-8>
+    $<$<C_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>
 )
 set_target_properties(app PROPERTIES C_EXTENSIONS OFF)
 

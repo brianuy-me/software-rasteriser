@@ -4,14 +4,17 @@ from a linux environment, using make files and the older SDL2 API. I will be rec
 
 ### My Development Environment:
 - **Platform:** Cross-platform  
-- **Language:** C, C17 standard  
-- **Build System generator:** CMake, Version 4.4, Schema Version 12  
+- **Language:** C   
+- **C standard:** C17  
+- **Build system generator:** CMake  
+- **CMake version:** 4.4  
+- **CMake schema version:** 12  
 - **CMake generator:** Ninja Multi-Config  
 - **API:** SDL3  
 
 ## Building
 ```powershell
-cmake --preset ninja-x64                                                                                                # configure
-cmake --build --preset ninja-x64-release --target app                                                                   # build
-.\build\release\app.exe                                                                                                 # run
+cmake --preset ninja-x64                                              # configure
+cmake --build --preset ninja-x64-release --target app                 # build
+.\build\release\app.exe                                               # run
 ```

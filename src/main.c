@@ -22,7 +22,7 @@ bool initialize_window(void) {
         "rasteriser",               // window name
         800,                        // width
         600,                        // height
-        SDL_WINDOW_RESIZABLE
+        SDL_WINDOW_RESIZABLE        // window type
     );
     // check if window is working
     if (!window) {
@@ -78,7 +78,6 @@ void render(void) {
 
     SDL_RenderPresent(renderer);
 }
-
 
 int main(int argc, char *argv[]) {
     (void)argc;
