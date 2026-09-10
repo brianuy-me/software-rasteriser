@@ -19,21 +19,23 @@ FetchContent_Declare(SDL3
 FetchContent_MakeAvailable(SDL3)
 
 add_executable(app)
-
 target_sources(app PRIVATE
     src/main.c
 )
 
 target_include_directories(app PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_compile_features(app PRIVATE c_std_17)
-target_compile_options(app PRIVATE $<$<C_COMPILER_ID:MSVC>:/W4 /utf-8>)
+target_compile_options(app PRIVATE 
+	$<$<CXX_COMPILER_ID:MSVC>:/W4 /utf-8 /permissive->
+	$<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>
+)
 set_target_properties(app PROPERTIES C_EXTENSIONS OFF)
 
 target_link_libraries(app PRIVATE SDL3::SDL3)
 
 add_custom_command(TARGET app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            -t $<TARGET_FILE_DIR:app> $<TARGET_RUNTIME_DLLS:app>
+        -t $<TARGET_FILE_DIR:app> $<TARGET_RUNTIME_DLLS:app>
     COMMAND_EXPAND_LISTS)
 
 
