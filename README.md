@@ -1,8 +1,8 @@
 # Description
-For this project I will be following a Software Rasteriser course by Pikuma's 3D Graphics Programming from Scratch. Since the origin was built
+For this project I will be following a Software Rasteriser course by Pikuma's 3D Graphics Programming from Scratch. Since the original was built
 from a linux environment, using make files and the older SDL2 API. I will be recreating it using a more mordern and cross-platform approach.
 
-### My Development Environment:
+### Development Environment:
 - **Platform:** Cross-platform  
 - **Language:** C   
 - **C standard:** C17  

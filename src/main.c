@@ -1,13 +1,18 @@
-#include <stdio.h>
-#include <stdbool.h>
+#include <stdio.h>      // input/output
+#include <stdint.h>     // _t types
+#include <stdbool.h>    // boolen
+#include <stdlib.h>     // memory allocation (malloc)
+#include <SDL3/SDL.h>   // SDL3 API
 
-// SDL3 includes
-#include <SDL3/SDL.h>
 
-// initialising global variables
+// global variables
 bool is_running = false;
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
+
+uint32_t* color_buffer = NULL;
+int window_width = 800;
+int window_height = 600;
 
 bool initialize_window(void) {
     // initialise SDL3
@@ -20,8 +25,8 @@ bool initialize_window(void) {
     // creating SDL window, assigning window value
     window = SDL_CreateWindow(
         "rasteriser",               // window name
-        800,                        // width
-        600,                        // height
+        window_width,               // width
+        window_height,              // height
         SDL_WINDOW_RESIZABLE        // window type
     );
     // check if window is working
@@ -48,7 +53,12 @@ bool initialize_window(void) {
 }
 
 void setup(void) {
-
+    // memory allocation for color buffer
+    color_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
+    
+    if (!color_buffer) {
+        printf("mallac failed to allocate");
+    }
 }
 
 void process_input(void) {
@@ -79,6 +89,17 @@ void render(void) {
     SDL_RenderPresent(renderer);
 }
 
+
+// destroy memory in reverse order of creation
+void memory_cleanup(void) {
+    free(color_buffer);
+    color_buffer = NULL;
+    SDL_DestroyRenderer(renderer);      // needs window alive
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
+
 int main(int argc, char *argv[]) {
     (void)argc;
     (void)argv;
@@ -86,6 +107,7 @@ int main(int argc, char *argv[]) {
     is_running = initialize_window();
     
     setup();
+ 
     
     while (is_running) {
         process_input();
@@ -94,5 +116,7 @@ int main(int argc, char *argv[]) {
     }
     
     
+    memory_cleanup();
+
     return 0;
 }
