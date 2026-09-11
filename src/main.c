@@ -8,10 +8,10 @@
 // global variables
 bool is_running = false;
 
-SDL_Window* window = NULL;
-SDL_Renderer* renderer = NULL;
-SDL_Texture* color_buffer_texture = NULL;
-uint32_t* color_buffer = NULL;
+SDL_Window *window = NULL;
+SDL_Renderer *renderer = NULL;
+SDL_Texture *fb_texture = NULL;
+uint32_t *frame_buffer = NULL;
 
 int window_width = 800;
 int window_height = 600;
@@ -26,6 +26,13 @@ bool initialize_window(void) {
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // window
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    // use SDL to query what is the fullscreen max width and height
+    // SDL_DisplayID display = SDL_GetPrimaryDisplay();
+    // const SDL_DisplayMode *mode = SDL_GetCurrentDisplayMode(display);
+    
+    // window_width = mode->w;
+    // window_height = mode->h;
+
     // creating SDL window, assigning window value
     window = SDL_CreateWindow(
         "rasteriser",               // window name
@@ -35,9 +42,10 @@ bool initialize_window(void) {
     );
     // check if window is working
     if (!window) {
-        fprintf(stderr, "Error, creating SDL window \n", SDL_GetError());
-        return false;
+      fprintf(stderr, "Error, creating SDL window \n", SDL_GetError());
+      return false;
     }
+
     // setting windows position, returns bool in SDL3
     if (!SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED)) {
         fprintf(stderr, "Error, setting position SDL window \n", SDL_GetError());
@@ -45,10 +53,11 @@ bool initialize_window(void) {
     }  
     SDL_ShowWindow(window);
     
+    //SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // renderer
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    
     // creating SDL renderer
     renderer = SDL_CreateRenderer(window, NULL);
     if (!renderer) {
@@ -64,17 +73,16 @@ bool initialize_window(void) {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 void setup(void) {
     // memory allocation for color buffer in bytes
-    color_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
-    if (!color_buffer) { printf("mallac failed to allocate"); }     // check it is not NULL
+    frame_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
+    if (!frame_buffer) { printf("mallac failed to allocate"); }     // check it is not NULL
     
-    color_buffer_texture = SDL_CreateTexture(
+    fb_texture = SDL_CreateTexture(
         renderer,
-        SDL_PIXELFORMAT_ARGB8888,
+        SDL_PIXELFORMAT_RGBA8888,
         SDL_TEXTUREACCESS_STREAMING,
         window_width,
         window_height
     );
-    
 }
 
 
@@ -104,41 +112,68 @@ void update(void) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// render color buffer
+// render frame buffer
 ////////////////////////////////////////////////////////////////////////////////////////////////
-void render_color_buffer(void) {
+// update & render texture
+void render_frame_buffer(void) {
     SDL_UpdateTexture(
-        color_buffer_texture,
+        fb_texture,
         NULL,
-        color_buffer,
+        frame_buffer,
         (int) window_width * sizeof(uint32_t)
     );
     
-    if (!SDL_RenderTexture(renderer, color_buffer_texture, NULL, NULL)) {
+    if (!SDL_RenderTexture(renderer, fb_texture, NULL, NULL)) {
         fprintf(stderr, "Error, renderer could not be created \n");
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// clear color buffer
+// clear frame buffer
 ////////////////////////////////////////////////////////////////////////////////////////////////
-void clear_color_buffer(uint32_t color) {
+// change color for every pixel
+void clear_frame_buffer(uint32_t color) {
     for (int y = 0; y < window_height; y++) {
         for ( int x = 0; x < window_width; x++) {
-            color_buffer[(window_width * y) + x] = color;
+            frame_buffer[(window_width * y) + x] = color;
         }
     }    
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
+// draw rectangle
+////////////////////////////////////////////////////////////////////////////////////////////////
+void draw_rectangle(int x, int y, int width, int height, uint32_t color) {
+    for (int i = y; i < (y + height); i++) {
+        for (int j = x; j < (x + width); j++) {
+            frame_buffer[(window_width * i) + j] = color;
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// draw grid
+////////////////////////////////////////////////////////////////////////////////////////////////
+void draw_grid(uint32_t color) {    
+    for (int y = 0; y < window_height; y+=10) {
+        for (int x = 0; x < window_width; x+=10) {
+            frame_buffer[(window_width * y) + x] = color;
+        }
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
 // render
 ////////////////////////////////////////////////////////////////////////////////////////////////
 void render(void) {
-    SDL_SetRenderDrawColor(renderer, 52, 53, 65, 255);          // set screen colour (rgba)
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);          // set screen colour (RGBA)
     SDL_RenderClear(renderer);                                  // clear whole window
-
-    render_color_buffer();
-    clear_color_buffer(0xFFFFFF00); // ARGB
+    
+    draw_grid(0x333333FF);
+    draw_rectangle(40, 40, 200, 140, 0xFF0000FF);
+    render_frame_buffer();                                      // update & render texture
+    clear_frame_buffer(0x525365FF);                             // set each pixel to yellow (RGBA)
     
     SDL_RenderPresent(renderer);
 }
@@ -148,9 +183,10 @@ void render(void) {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // destroy memory in reverse order of creation
 void memory_cleanup(void) {
-    free(color_buffer);
-    color_buffer = NULL;
-    SDL_DestroyTexture(color_buffer_texture);   // needs renderer to be alive
+    
+    free(frame_buffer);
+    frame_buffer = NULL;
+    SDL_DestroyTexture(fb_texture);   // needs renderer to be alive
     SDL_DestroyRenderer(renderer);      // needs window alive
     SDL_DestroyWindow(window);
     SDL_Quit();
