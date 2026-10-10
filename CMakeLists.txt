@@ -19,11 +19,19 @@ FetchContent_Declare(SDL3
 FetchContent_MakeAvailable(SDL3)
 
 add_executable(app)
-target_sources(app PRIVATE
-    src/main.c
+target_sources(app 
+	PRIVATE
+		src/main.c
+		src/display.c
+		src/vector.c
+	PRIVATE
+		FILE_SET app_headers TYPE HEADERS
+			BASE_DIRS include
+			FILES
+				include/display.h
+				include/vector.h
 )
 
-target_include_directories(app PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_compile_features(app PRIVATE c_std_17)
 target_compile_options(app PRIVATE
     $<$<C_COMPILER_ID:MSVC>:/W4 /utf-8>
