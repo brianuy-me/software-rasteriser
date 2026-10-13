@@ -13,10 +13,12 @@ vec3_t cube_points[N_POINTS];
 vec2_t projected_points[N_POINTS];
 
 vec3_t camera_position = { .x = 0, .y = 0, .z = -5 };
+vec3_t cube_rotation = { .x = 0, .y = 0, .z = 0 };
 
-float fov_factor = 640;
+float fov_factor = 640; // spacing between points
 
 bool is_running = false;
+uint64_t previous_frame_time = 0;
 
 void setup(void) {
     // memory allocation for color buffer in bytes
@@ -63,24 +65,41 @@ void process_input(void) {
     }
 }
 
+// takes in a vec3's point convert it to a vec2 
 vec2_t project(vec3_t point) {
 	vec2_t projected_point = {
 		.x = (fov_factor * point.x) / point.z,
 		.y = (fov_factor * point.y) / point.z
 	};
-	
 	return projected_point;
 }
 
 void update(void) {
+	// 30 fps
+	uint64_t elapsed = SDL_GetTicks() - previous_frame_time;
+	if(elapsed < FRAME_TARGET_TIME) {
+		SDL_Delay((uint32_t)(FRAME_TARGET_TIME - elapsed));
+	}
+	previous_frame_time = SDL_GetTicks();
+	
+	
+	cube_rotation.x += 0.01f;
+	cube_rotation.y += 0.01f;
+	cube_rotation.z += 0.01f;
+	
+	
     for(int i = 0; i < N_POINTS; i++) {
 		vec3_t point = cube_points[i];
 		
-		// move the points away from the camera
-		point.z -= camera_position.z;
+		vec3_t transformed_point = vec3_rotate_x(point, cube_rotation.x);
+		transformed_point = vec3_rotate_y(transformed_point, cube_rotation.y);
+		transformed_point = vec3_rotate_z(transformed_point, cube_rotation.z);
+		
+		// translate the points away from the camera
+		transformed_point.z -= camera_position.z;
 		
 		// project the current point
-		vec2_t projected_point = project(point);
+		vec2_t projected_point = project(transformed_point);
 		
 		// save the projected 2d vector in the array of projected points
 		projected_points[i] = projected_point;
@@ -120,7 +139,7 @@ int main(int argc, char *argv[]) {
     setup();
 	
     
-    while (is_running) {
+    while(is_running) {
         process_input();
         update();
         render();

@@ -4,13 +4,14 @@
 #include <SDL3/SDL.h>
 #include <stdint.h>
 
+#define FPS 30
+#define FRAME_TARGET_TIME (1000 / FPS)
+
 // global variables declarations
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
-
 extern uint32_t *color_buffer;
 extern SDL_Texture *color_buffer_texture;
-
 extern int window_width;
 extern int window_height;
 
