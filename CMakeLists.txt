@@ -24,12 +24,16 @@ target_sources(app
 		src/main.c
 		src/display.c
 		src/vector.c
+		src/mesh.c
+		src/triangle.c
 	PRIVATE
 		FILE_SET app_headers TYPE HEADERS
 			BASE_DIRS include
 			FILES
 				include/display.h
 				include/vector.h
+				include/mesh.h
+				include/triangle.h
 )
 
 target_compile_features(app PRIVATE c_std_17)
