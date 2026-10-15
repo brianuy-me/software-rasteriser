@@ -107,15 +107,30 @@ void update(void) {
 void render(void) {
     draw_grid(0x333333FF);
 	
-	
 	// loop all projected triangles and render them
 	for(int i = 0; i < N_MESH_FACES; i++) {
 		triangle_t triangle = triangles_to_render[i];
+		
+		// draw vertex points
 		draw_rect((int)triangle.points[0].x, (int)triangle.points[0].y, 3, 3, 0xFFFF00FF);
 		draw_rect((int)triangle.points[1].x, (int)triangle.points[1].y, 3, 3, 0xFFFF00FF);
 		draw_rect((int)triangle.points[2].x, (int)triangle.points[2].y, 3, 3, 0xFFFF00FF);
+		
+		
+		// draw unfilled triangle
+		draw_triangle(
+			(int)triangle.points[0].x,
+			(int)triangle.points[0].y,
+			(int)triangle.points[1].x,
+			(int)triangle.points[1].y,
+			(int)triangle.points[2].x,
+			(int)triangle.points[2].y,
+			0xFFFF00FF
+		);
 	}
-    
+	
+	
+	
 	
 	render_color_buffer();                                      // update & render texture
     clear_color_buffer(0x525365FF);                             // set each pixel to yellow (RGBA)
