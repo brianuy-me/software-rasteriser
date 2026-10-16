@@ -141,11 +141,7 @@ void clear_color_buffer(uint32_t color) {
 }
 
 // destroy memory in reverse order of creation
-void destroy_window(void) {
-	
-    free(color_buffer);
-    color_buffer = NULL;
-	
+void destroy_window(void) {	
 	// needs renderer to be alive
     SDL_DestroyTexture(color_buffer_texture);
 	color_buffer_texture = NULL;
