@@ -26,6 +26,7 @@ target_sources(app
 		src/vector.c
 		src/mesh.c
 		src/triangle.c
+		src/array.c
 	PRIVATE
 		FILE_SET app_headers TYPE HEADERS
 			BASE_DIRS include
@@ -34,6 +35,7 @@ target_sources(app
 				include/vector.h
 				include/mesh.h
 				include/triangle.h
+				include/array.h
 )
 
 target_compile_features(app PRIVATE c_std_17)

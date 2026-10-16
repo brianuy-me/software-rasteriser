@@ -4,17 +4,18 @@
 #include <stdlib.h>     // memory allocation (malloc)
 #include <SDL3/SDL.h>   // SDL3 API
 
+#include <array.h>
 #include <display.h>
 #include <vector.h>
 #include <mesh.h>
 #include <triangle.h>
 
-triangle_t triangles_to_render[N_MESH_FACES];
+triangle_t *triangles_to_render = NULL;
 
 vec3_t camera_position = { .x = 0, .y = 0, .z = -5 };
 vec3_t cube_rotation = { .x = 0, .y = 0, .z = 0 };
 
-float fov_factor = 640; // scaling between points
+float fov_factor = 640; // scaling points
 
 bool is_running = false;
 uint64_t previous_frame_time = 0;
@@ -65,6 +66,9 @@ void update(void) {
 	}
 	previous_frame_time = SDL_GetTicks();
 	
+	// initialize the array of triangles to render
+	triangles_to_render = NULL;
+	
 	cube_rotation.x += 0.01f;
 	cube_rotation.y += 0.01f;
 	cube_rotation.z += 0.01f;
@@ -100,7 +104,8 @@ void update(void) {
 			projected_triangle.points[j] = projected_point;
 		}
 		// save the projected triangle in the array of triangle to render
-		triangles_to_render[i] = projected_triangle;
+		//triangles_to_render[i] = projected_triangle;
+		array_push(triangles_to_render, projected_triangle);
 	}
 }
 
@@ -108,13 +113,15 @@ void render(void) {
     draw_grid(0x333333FF);
 	
 	// loop all projected triangles and render them
-	for(int i = 0; i < N_MESH_FACES; i++) {
+	int num_triangles = array_length(triangles_to_render);
+	
+	for(int i = 0; i < num_triangles; i++) {
 		triangle_t triangle = triangles_to_render[i];
 		
 		// draw vertex points
-		draw_rect((int)triangle.points[0].x, (int)triangle.points[0].y, 3, 3, 0xFFFF00FF);
-		draw_rect((int)triangle.points[1].x, (int)triangle.points[1].y, 3, 3, 0xFFFF00FF);
-		draw_rect((int)triangle.points[2].x, (int)triangle.points[2].y, 3, 3, 0xFFFF00FF);
+		draw_rect((int)triangle.points[0].x, (int)triangle.points[0].y, 3, 3, 0xFFFF00FF); // vertex A
+		draw_rect((int)triangle.points[1].x, (int)triangle.points[1].y, 3, 3, 0xFFFF00FF); // vertex B
+		draw_rect((int)triangle.points[2].x, (int)triangle.points[2].y, 3, 3, 0xFFFF00FF); // vertex C
 		
 		
 		// draw unfilled triangle
@@ -129,8 +136,8 @@ void render(void) {
 		);
 	}
 	
-	
-	
+	// clear the array of triangles to render every frame loop
+	array_free(triangles_to_render);
 	
 	render_color_buffer();                                      // update & render texture
     clear_color_buffer(0x525365FF);                             // set each pixel to yellow (RGBA)
