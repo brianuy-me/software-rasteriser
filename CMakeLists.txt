@@ -27,6 +27,7 @@ target_sources(app
 		src/mesh.c
 		src/triangle.c
 		src/array.c
+		$<$<PLATFORM_ID:Windows>:assets/windows/app.rc>
 	PRIVATE
 		FILE_SET app_headers TYPE HEADERS
 			BASE_DIRS include
@@ -54,8 +55,9 @@ add_custom_command(TARGET app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         -t $<TARGET_FILE_DIR:app>
 		$<TARGET_RUNTIME_DLLS:app>
-		${CMAKE_CURRENT_SOURCE_DIR}/assets/cube.obj
-		${CMAKE_CURRENT_SOURCE_DIR}/assets/f22.obj
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/icon/cube.bmp
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/mesh/cube.obj
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/mesh/f22.obj
     COMMAND_EXPAND_LISTS
 	VERBATIM
 )

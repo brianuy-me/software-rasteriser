@@ -22,13 +22,6 @@ bool initialize_window(void) {
         return false;
     }
     
-    // use SDL to query what is the fullscreen max width and height
-    // SDL_DisplayID display = SDL_GetPrimaryDisplay();
-    // const SDL_DisplayMode *mode = SDL_GetCurrentDisplayMode(display);
-    
-    // window_width = mode->w;
-    // window_height = mode->h;
-
     // creating SDL window, assigning window value
     window = SDL_CreateWindow(
         "rasteriser",               // window name
@@ -49,8 +42,27 @@ bool initialize_window(void) {
     }  
     SDL_ShowWindow(window);
     
-    //SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
-    
+	// setting up window's icon
+	char icon_path[1024];
+	snprintf(icon_path, sizeof icon_path, "%s%s", SDL_GetBasePath(), "cube.bmp");
+	SDL_Surface *icon = SDL_LoadBMP(icon_path);
+	
+	// if icon is NULL return NULL
+	if(!icon) {
+		fprintf(stderr, "Error, failed to create icon: %s\n", SDL_GetError());
+		return false;
+	}
+	
+	// set icon
+	if(!SDL_SetWindowIcon(window, icon)) {
+		fprintf(stderr, "Error, failed to set window icon: %s\n", SDL_GetError());
+		return false;
+	}
+	
+	// free icon after use
+	SDL_DestroySurface(icon);
+	icon = NULL;
+
     // creating SDL renderer
     renderer = SDL_CreateRenderer(window, NULL);
     if (!renderer) {
