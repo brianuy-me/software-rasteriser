@@ -59,9 +59,12 @@ void load_cube_mesh_data(void) {
 	}
 }
 
-void load_obj_file_data(char* filename) {
+void load_obj_file_data(const char *base_path, const char* filename) {
+	char full_path[1024];
+	snprintf(full_path, sizeof full_path, "%s%s", base_path, filename);
+	
 	FILE *file;
-	file = fopen(filename, "r");
+	file = fopen(full_path, "r");
 	if (!file) {
 		printf("failed to open file");
 	}

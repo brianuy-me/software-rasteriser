@@ -54,18 +54,11 @@ add_custom_command(TARGET app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         -t $<TARGET_FILE_DIR:app>
 		$<TARGET_RUNTIME_DLLS:app>
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/cube.obj
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/f22.obj
     COMMAND_EXPAND_LISTS
 	VERBATIM
 )
-
-add_custom_target(copy_assets
-	COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-		-t $<TARGET_FILE_DIR:app>/assets
-		${CMAKE_CURRENT_SOURCE_DIR}/assets
-	COMMENT "copying assets"
-	VERBATIM
-)
-add_dependencies(app copy_assets)
 
 install(TARGETS app RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES $<TARGET_RUNTIME_DLLS:app> DESTINATION ${CMAKE_INSTALL_BINDIR})

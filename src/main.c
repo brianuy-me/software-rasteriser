@@ -19,6 +19,8 @@ float fov_factor = 640; // scaling points
 bool is_running = false;
 uint64_t previous_frame_time = 0;
 
+char full_path[1024];
+
 void setup(void) {
     // memory allocation for color buffer in bytes
     color_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
@@ -34,7 +36,7 @@ void setup(void) {
 	
 	// loads the cube values in the mesh data structure
 	//load_cube_mesh_data();
-	load_obj_file_data("./assets/f22.obj");
+	load_obj_file_data(SDL_GetBasePath(), "f22.obj");
 }
 
 void process_input(void) {
