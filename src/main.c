@@ -33,7 +33,8 @@ void setup(void) {
     );
 	
 	// loads the cube values in the mesh data structure
-	load_cube_mesh_data();
+	//load_cube_mesh_data();
+	load_obj_file_data("./assets/f22.obj");
 }
 
 void process_input(void) {
@@ -71,9 +72,9 @@ void update(void) {
 	// initialize the array of triangles to render
 	triangles_to_render = NULL;
 	
-	mesh.rotation.x += 0.01f;
+	mesh.rotation.x += 0.03f;
 	mesh.rotation.y += 0.01f;
-	mesh.rotation.z += 0.01f;
+	//mesh.rotation.z += 0.01f;
 	
 	
 	int num_faces = array_length(mesh.faces);
@@ -87,7 +88,7 @@ void update(void) {
 		
 		triangle_t projected_triangle;
 		
-		// loop all three vertices of this current face and apply  transformations
+		// loop all three vertices of this current face and apply transformations
 		for(int j = 0; j < 3; j++) {
 			vec3_t transformed_vertex = face_vertices[j];
 			
@@ -127,7 +128,7 @@ void render(void) {
 		draw_rect((int)triangle.points[1].x, (int)triangle.points[1].y, 3, 3, 0xFFFF00FF); // vertex B
 		draw_rect((int)triangle.points[2].x, (int)triangle.points[2].y, 3, 3, 0xFFFF00FF); // vertex C
 		
-		
+		//
 		// draw unfilled triangle
 		draw_triangle(
 			(int)triangle.points[0].x,
@@ -136,7 +137,7 @@ void render(void) {
 			(int)triangle.points[1].y,
 			(int)triangle.points[2].x,
 			(int)triangle.points[2].y,
-			0xFFFF00FF
+			0x00FF00FF
 		);
 	}
 	
@@ -166,7 +167,6 @@ int main(int argc, char *argv[]) {
     
     setup();
 	
-    
     while(is_running) {
         process_input();
         update();

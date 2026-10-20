@@ -12,7 +12,7 @@ void* array_hold(void* array, int count, int item_size) {
         int* base = (int*)malloc(raw_size);
         base[0] = count;  // capacity
         base[1] = count;  // occupied
-        return base + 2;
+        return base + 2;  // +2: points to element 3 (equivalent to base[2])
     } else if (ARRAY_OCCUPIED(array) + count <= ARRAY_CAPACITY(array)) {
         ARRAY_OCCUPIED(array) += count;
         return array;

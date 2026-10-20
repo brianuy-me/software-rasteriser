@@ -40,18 +40,33 @@ target_sources(app
 
 target_compile_features(app PRIVATE c_std_17)
 target_compile_options(app PRIVATE
-    $<$<C_COMPILER_ID:MSVC>:/W4 /utf-8>
-    $<$<C_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic>
+    "$<$<C_COMPILER_ID:MSVC>:/W4;/utf-8;/D_CRT_SECURE_NO_WARNINGS>"
+    "$<$<C_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic>"
 )
 set_target_properties(app PROPERTIES C_EXTENSIONS OFF)
 
-target_link_libraries(app PRIVATE SDL3::SDL3)
+target_link_libraries(app PRIVATE 
+	SDL3::SDL3
+	$<$<PLATFORM_ID:Linux>:m>
+)
 
 add_custom_command(TARGET app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        -t $<TARGET_FILE_DIR:app> $<TARGET_RUNTIME_DLLS:app>
-    COMMAND_EXPAND_LISTS)
+        -t $<TARGET_FILE_DIR:app>
+		$<TARGET_RUNTIME_DLLS:app>
+    COMMAND_EXPAND_LISTS
+	VERBATIM
+)
 
+add_custom_target(copy_assets
+	COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+		-t $<TARGET_FILE_DIR:app>/assets
+		${CMAKE_CURRENT_SOURCE_DIR}/assets
+	COMMENT "copying assets"
+	VERBATIM
+)
+add_dependencies(app copy_assets)
 
 install(TARGETS app RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES $<TARGET_RUNTIME_DLLS:app> DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY assets DESTINATION ${CMAKE_INSTALL_BINDIR})
