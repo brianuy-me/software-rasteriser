@@ -27,7 +27,7 @@ target_sources(app
 		src/mesh.c
 		src/triangle.c
 		src/array.c
-		$<$<PLATFORM_ID:Windows>:assets/windows/app.rc>
+		$<$<PLATFORM_ID:Windows>:platform/windows/app.rc>
 	PRIVATE
 		FILE_SET app_headers TYPE HEADERS
 			BASE_DIRS include
