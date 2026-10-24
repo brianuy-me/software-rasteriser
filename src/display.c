@@ -24,7 +24,7 @@ bool initialize_window(void) {
     
     // creating SDL window, assigning window value
     window = SDL_CreateWindow(
-        "rasteriser",               // window name
+        "Software Rasteriser",      // window name
         window_width,               // width
         window_height,              // height
         SDL_WINDOW_RESIZABLE        // window type
