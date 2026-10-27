@@ -27,6 +27,7 @@ target_sources(app
 		src/mesh.c
 		src/triangle.c
 		src/array.c
+		src/matrix.c
 		$<$<PLATFORM_ID:Windows>:platform/windows/app.rc>
 	PRIVATE
 		FILE_SET app_headers TYPE HEADERS
@@ -37,6 +38,7 @@ target_sources(app
 				include/mesh.h
 				include/triangle.h
 				include/array.h
+				include/matrix.h
 )
 
 target_compile_features(app PRIVATE c_std_17)
