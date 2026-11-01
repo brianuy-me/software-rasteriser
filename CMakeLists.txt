@@ -28,6 +28,7 @@ target_sources(app
 		src/triangle.c
 		src/array.c
 		src/matrix.c
+		src/light.c
 		$<$<PLATFORM_ID:Windows>:platform/windows/app.rc>
 	PRIVATE
 		FILE_SET app_headers TYPE HEADERS
@@ -39,6 +40,7 @@ target_sources(app
 				include/triangle.h
 				include/array.h
 				include/matrix.h
+				include/light.h
 )
 
 target_compile_features(app PRIVATE c_std_17)
