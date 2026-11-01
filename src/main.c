@@ -93,8 +93,8 @@ void update(void) {
 	
 	// change the mesh scale, rotation values per animation frame
 	mesh.rotation.x += 0.01f;
-	mesh.rotation.y += 0.01f;
-	mesh.rotation.z += 0.01f;
+	//mesh.rotation.y += 0.01f;
+	//mesh.rotation.z += 0.01f;
 	mesh.translation.z = 5.0f;
 	
 	// create a scale, rotation, and translation matrices that will be used to multiply the mesh vertices
@@ -176,6 +176,9 @@ void update(void) {
 			// scale into the view
 			projected_points[j].x *= (window_width / 2.0f);
 			projected_points[j].y *= (window_height / 2.0f);
+			
+			// invert the y values to account for flipped screen y coordinate
+			projected_points[j].y *= -1;
 			
 			// translate the projected points to the middle of the screen
 			projected_points[j].x += (window_width / 2.0f);
