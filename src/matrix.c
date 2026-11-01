@@ -80,3 +80,26 @@ mat4_t mat4_mul_mat4(mat4_t a, mat4_t b) {
 	}
 	return m;
 }
+
+mat4_t mat4_make_perspective(float fov, float aspect, float znear, float zfar) {
+	mat4_t m = {{{ 0 }}};
+	m.m[0][0] = aspect * (1.0f / tanf(fov / 2.0f));
+	m.m[1][1] = 1.0f / tanf(fov / 2.0f);
+	m.m[2][2] = zfar / (zfar - znear);
+	m.m[2][3] = (-zfar * znear) / (zfar - znear);
+	m.m[3][2] = 1.0f;
+	return m;
+}
+
+vec4_t mat4_mul_vec4_project(mat4_t mat_proj, vec4_t v) {
+	// multiply the projection matrix by our original vector
+	vec4_t result = mat4_mul_vec4(mat_proj, v);
+	
+	// performs perspective divide with original z-value that is now stored in w
+	if (result.w != 0.0f) {
+		result.x /= result.w;
+		result.y /= result.w;
+		result.z /= result.w;
+	}
+	return result;
+}
