@@ -13,6 +13,7 @@
 #include <light.h>
 #include <mesh.h>
 #include <triangle.h>
+#include <texture.h>
 
 triangle_t *triangles_to_render = NULL;
 
@@ -47,10 +48,15 @@ void setup(void) {
 	
 	proj_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
 	
+	// manually load the hardcoded texture data from the static array
+	mesh_texture = (uint32_t *)REDBRICK_TEXTURE;
+	texture_width = 64;
+	texture_height = 64;
+	
 	
 	// loads the cube values in the mesh data structure
-	//load_cube_mesh_data();
-	load_obj_file_data(SDL_GetBasePath(), "f22.obj");
+	load_cube_mesh_data();
+	//load_obj_file_data(SDL_GetBasePath(), "f22.obj");
 }
 
 void process_input(void) {
@@ -72,6 +78,10 @@ void process_input(void) {
 				render_method = RENDER_FILL_TRIANGLE;
 			if (event.key.key == SDLK_4)
 				render_method = RENDER_FILL_TRIANGLE_WIRE;
+			if (event.key.key == SDLK_5)
+				render_method = RENDER_TEXTURED;
+			if (event.key.key == SDLK_6)
+				render_method = RENDER_TEXTURED_WIRE;
 			if (event.key.key == SDLK_C)
 				cull_method = CULL_BACKFACE;
 			if (event.key.key == SDLK_D)
@@ -93,8 +103,8 @@ void update(void) {
 	
 	// change the mesh scale, rotation values per animation frame
 	mesh.rotation.x += 0.01f;
-	//mesh.rotation.y += 0.01f;
-	//mesh.rotation.z += 0.01f;
+	mesh.rotation.y += 0.01f;
+	mesh.rotation.z += 0.01f;
 	mesh.translation.z = 5.0f;
 	
 	// create a scale, rotation, and translation matrices that will be used to multiply the mesh vertices
@@ -200,6 +210,11 @@ void update(void) {
 				{ projected_points[1].x, projected_points[1].y },
 				{ projected_points[2].x, projected_points[2].y },
 			},
+			.texcoords = {
+				{ mesh_face.a_uv.u, mesh_face.a_uv.v },
+				{ mesh_face.b_uv.u, mesh_face.b_uv.v },
+				{ mesh_face.c_uv.u, mesh_face.c_uv.v },
+			},
 			.color = triangle_color,
 			.avg_depth = avg_depth
 		};
@@ -224,7 +239,7 @@ void update(void) {
 }
 
 void render(void) {
-    draw_grid(0x333333FF);
+    draw_grid(0x333333FF);	
 	
 	// loop all projected triangles and render them
 	int num_triangles = array_length(triangles_to_render);
@@ -241,8 +256,18 @@ void render(void) {
 			);
 		}
 		
+		// draw textured triangle
+		if (render_method == RENDER_TEXTURED || render_method == RENDER_TEXTURED_WIRE) {
+			draw_textured_triangle(
+				(int)triangle.points[0].x, (int)triangle.points[0].y, triangle.texcoords[0].u, triangle.texcoords[0].v,
+				(int)triangle.points[1].x, (int)triangle.points[1].y, triangle.texcoords[1].u, triangle.texcoords[1].v,
+				(int)triangle.points[2].x, (int)triangle.points[2].y, triangle.texcoords[2].u, triangle.texcoords[2].v,
+				mesh_texture
+			);
+		}
+		
 		// draw unfilled triangle (wireframe)
-		if (render_method == RENDER_WIRE || render_method == RENDER_WIRE_VERTEX || render_method == RENDER_FILL_TRIANGLE_WIRE) {
+		if (render_method == RENDER_WIRE || render_method == RENDER_WIRE_VERTEX || render_method == RENDER_FILL_TRIANGLE_WIRE || render_method == RENDER_TEXTURED_WIRE) {
 			draw_triangle(
 				(int)triangle.points[0].x, (int)triangle.points[0].y,
 				(int)triangle.points[1].x, (int)triangle.points[1].y,
