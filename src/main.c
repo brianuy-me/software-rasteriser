@@ -102,9 +102,9 @@ void update(void) {
 	triangles_to_render = NULL;
 	
 	// change the mesh scale, rotation values per animation frame
-	mesh.rotation.x += 0.01f;
+	//mesh.rotation.x += 0.01f;
 	mesh.rotation.y += 0.01f;
-	mesh.rotation.z += 0.01f;
+	//mesh.rotation.z += 0.01f;
 	mesh.translation.z = 5.0f;
 	
 	// create a scale, rotation, and translation matrices that will be used to multiply the mesh vertices
@@ -206,9 +206,9 @@ void update(void) {
 		
 		triangle_t projected_triangle = {
 			.points = {
-				{ projected_points[0].x, projected_points[0].y },
-				{ projected_points[1].x, projected_points[1].y },
-				{ projected_points[2].x, projected_points[2].y },
+				{ projected_points[0].x, projected_points[0].y, projected_points[0].z, projected_points[0].w },
+				{ projected_points[1].x, projected_points[1].y, projected_points[1].z, projected_points[1].w },
+				{ projected_points[2].x, projected_points[2].y, projected_points[2].z, projected_points[2].w },
 			},
 			.texcoords = {
 				{ mesh_face.a_uv.u, mesh_face.a_uv.v },
@@ -259,9 +259,9 @@ void render(void) {
 		// draw textured triangle
 		if (render_method == RENDER_TEXTURED || render_method == RENDER_TEXTURED_WIRE) {
 			draw_textured_triangle(
-				(int)triangle.points[0].x, (int)triangle.points[0].y, triangle.texcoords[0].u, triangle.texcoords[0].v,
-				(int)triangle.points[1].x, (int)triangle.points[1].y, triangle.texcoords[1].u, triangle.texcoords[1].v,
-				(int)triangle.points[2].x, (int)triangle.points[2].y, triangle.texcoords[2].u, triangle.texcoords[2].v,
+				(int)triangle.points[0].x, (int)triangle.points[0].y, triangle.points[0].z, triangle.points[0].w, triangle.texcoords[0].u, triangle.texcoords[0].v,
+				(int)triangle.points[1].x, (int)triangle.points[1].y, triangle.points[1].z, triangle.points[1].w, triangle.texcoords[1].u, triangle.texcoords[1].v,
+				(int)triangle.points[2].x, (int)triangle.points[2].y, triangle.points[2].z, triangle.points[2].w, triangle.texcoords[2].u, triangle.texcoords[2].v,
 				mesh_texture
 			);
 		}
