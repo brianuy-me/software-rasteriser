@@ -31,6 +31,7 @@ target_sources(app
 		src/light.c
 		src/texture.c
 		src/swap.c
+		src/upng.c
 		$<$<PLATFORM_ID:Windows>:platform/windows/app.rc>
 	PRIVATE
 		FILE_SET app_headers TYPE HEADERS
@@ -45,6 +46,7 @@ target_sources(app
 				include/light.h
 				include/texture.h
 				include/swap.h
+				include/upng.h
 )
 
 target_compile_features(app PRIVATE c_std_17)
@@ -66,6 +68,7 @@ add_custom_command(TARGET app POST_BUILD
 		${CMAKE_CURRENT_SOURCE_DIR}/assets/icon/cube.bmp
 		${CMAKE_CURRENT_SOURCE_DIR}/assets/mesh/cube.obj
 		${CMAKE_CURRENT_SOURCE_DIR}/assets/mesh/f22.obj
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/texture/cube.png
     COMMAND_EXPAND_LISTS
 	VERBATIM
 )

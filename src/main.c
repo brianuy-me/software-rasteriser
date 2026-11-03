@@ -6,6 +6,7 @@
 #include <stdlib.h>     // memory allocation (malloc)
 #include <SDL3/SDL.h>   // SDL3 API
 
+#include <upng.h>
 #include <array.h>
 #include <display.h>
 #include <vector.h>
@@ -48,15 +49,10 @@ void setup(void) {
 	
 	proj_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
 	
-	// manually load the hardcoded texture data from the static array
-	mesh_texture = (uint32_t *)REDBRICK_TEXTURE;
-	texture_width = 64;
-	texture_height = 64;
-	
-	
 	// loads the cube values in the mesh data structure
 	load_cube_mesh_data();
-	//load_obj_file_data(SDL_GetBasePath(), "f22.obj");
+	//load_obj_file_data(SDL_GetBasePath(), "cube.obj");
+	load_png_texture_data(SDL_GetBasePath(), "cube.png");
 }
 
 void process_input(void) {
@@ -296,6 +292,10 @@ void render(void) {
 void free_resources(void) {
 	free(color_buffer);
     color_buffer = NULL;
+	free(mesh_texture);
+	mesh_texture = NULL;
+	upng_free(png_texture);
+	png_texture = NULL;
 	array_free(mesh.faces);
 	mesh.faces = NULL;
 	array_free(mesh.vertices);
