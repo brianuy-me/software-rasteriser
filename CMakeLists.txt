@@ -68,7 +68,18 @@ add_custom_command(TARGET app POST_BUILD
 		${CMAKE_CURRENT_SOURCE_DIR}/assets/icon/cube.bmp
 		${CMAKE_CURRENT_SOURCE_DIR}/assets/mesh/cube.obj
 		${CMAKE_CURRENT_SOURCE_DIR}/assets/mesh/f22.obj
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/mesh/crab.obj
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/mesh/drone.obj
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/mesh/efa.obj
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/mesh/f117.obj
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/mesh/sphere.obj
 		${CMAKE_CURRENT_SOURCE_DIR}/assets/texture/cube.png
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/texture/crab.png
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/texture/drone.png
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/texture/efa.png
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/texture/f22.png
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/texture/f117.png
+		${CMAKE_CURRENT_SOURCE_DIR}/assets/texture/pikuma.png
     COMMAND_EXPAND_LISTS
 	VERBATIM
 )

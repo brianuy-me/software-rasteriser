@@ -50,9 +50,9 @@ void setup(void) {
 	proj_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
 	
 	// loads the cube values in the mesh data structure
-	load_cube_mesh_data();
-	//load_obj_file_data(SDL_GetBasePath(), "cube.obj");
-	load_png_texture_data(SDL_GetBasePath(), "cube.png");
+	//load_cube_mesh_data();
+	load_obj_file_data(SDL_GetBasePath(), "f22.obj");
+	load_png_texture_data(SDL_GetBasePath(), "f22.png");
 }
 
 void process_input(void) {
@@ -98,8 +98,8 @@ void update(void) {
 	triangles_to_render = NULL;
 	
 	// change the mesh scale, rotation values per animation frame
-	//mesh.rotation.x += 0.01f;
-	mesh.rotation.y += 0.01f;
+	mesh.rotation.x -= 0.03f;
+	//mesh.rotation.y += 0.01f;
 	//mesh.rotation.z += 0.01f;
 	mesh.translation.z = 5.0f;
 	
@@ -114,10 +114,11 @@ void update(void) {
 	for (int i = 0; i < num_faces; i++) {
 		face_t mesh_face = mesh.faces[i];
 		
+		// loop all triangle faces of our mesh
 		vec3_t face_vertices[3];
-		face_vertices[0] = mesh.vertices[mesh_face.a - 1];
-		face_vertices[1] = mesh.vertices[mesh_face.b - 1];
-		face_vertices[2] = mesh.vertices[mesh_face.c - 1];
+		face_vertices[0] = mesh.vertices[mesh_face.a];
+		face_vertices[1] = mesh.vertices[mesh_face.b];
+		face_vertices[2] = mesh.vertices[mesh_face.c];
 		
 		vec4_t transformed_vertices[3];
 		
