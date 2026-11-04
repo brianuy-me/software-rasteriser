@@ -2,6 +2,30 @@
 #include <display.h>
 #include <swap.h>
 
+vec3_t barycentric_weights(vec2_t a, vec2_t b, vec2_t c, vec2_t p) {
+	// find the vectors between the vertices ABC and point p
+	vec2_t ac = vec2_sub(c, a);
+	vec2_t ab = vec2_sub(b, a);
+	vec2_t ap = vec2_sub(p, a);
+	vec2_t pc = vec2_sub(c, p);
+	vec2_t pb = vec2_sub(b, p);
+	
+	// compute the area of the full parallegram/triangle ABC using 2D crosss product
+	float area_parallelogram_abc = (ac.x * ab.y - ac.y * ab.x);
+	
+	// alpha is the area of the small parallelogram/triangle PBC divided by the area of the full parallelogram/triangle ABC
+	float alpha = (pc.x * pb.y - pc.y * pb.x) / area_parallelogram_abc;
+	
+	// beta is the area of the small parallelogram/triangle APC divided by the area of the full parallelogram/triangle ABC
+	float beta = (ac.x * ap.y - ac.y * ap.x) / area_parallelogram_abc;
+	
+	// weight gamma is easily found since barycentric coordinates always add up to 1.0f
+	float gamma = 1 - alpha - beta;
+	
+	vec3_t weights = { alpha, beta, gamma };
+	return weights;
+}
+
 void fill_flat_bottom_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color) {
 	// find the two slopes (two triangle legs)
 	float inv_slope_1 = (float)(x1 - x0) / (y1 - y0);
@@ -73,29 +97,7 @@ void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, uint32
 	}
 }
 
-vec3_t barycentric_weights(vec2_t a, vec2_t b, vec2_t c, vec2_t p) {
-	// find the vectors between the vertices ABC and point p
-	vec2_t ac = vec2_sub(c, a);
-	vec2_t ab = vec2_sub(b, a);
-	vec2_t ap = vec2_sub(p, a);
-	vec2_t pc = vec2_sub(c, p);
-	vec2_t pb = vec2_sub(b, p);
-	
-	// compute the area of the full parallegram/triangle ABC using 2D crosss product
-	float area_parallelogram_abc = (ac.x * ab.y - ac.y * ab.x);
-	
-	// alpha is the area of the small parallelogram/triangle PBC divided by the area of the full parallelogram/triangle ABC
-	float alpha = (pc.x * pb.y - pc.y * pb.x) / area_parallelogram_abc;
-	
-	// beta is the area of the small parallelogram/triangle APC divided by the area of the full parallelogram/triangle ABC
-	float beta = (ac.x * ap.y - ac.y * ap.x) / area_parallelogram_abc;
-	
-	// weight gamma is easily found since barycentric coordinates always add up to 1.0f
-	float gamma = 1 - alpha - beta;
-	
-	vec3_t weights = { alpha, beta, gamma };
-	return weights;
-}
+
 
 // function to draw the textured pixel at position x and y using interpolation
 void draw_texel(
@@ -134,7 +136,19 @@ void draw_texel(
 	int tex_x = abs((int)(interpolated_u * texture_width)) % texture_width;
 	int tex_y = abs((int)(interpolated_v * texture_height)) % texture_height;
 	
-	draw_pixel(x, y, texture[(texture_width * tex_y) + tex_x]);
+	// adjust 1/w so the pixels that are closer to the camera have smaller values
+	interpolated_reciprocal_w = 1.0f - interpolated_reciprocal_w;
+	
+	// only draw the pixel if the depth value is less than the one previously stored in the z-buffer
+	if (interpolated_reciprocal_w < z_buffer[(window_width * y) + x]) {
+		// draw a pixel at postion (x,y) with the color that comes from the mapped texture
+		draw_pixel(x, y, texture[(texture_width * tex_y) + tex_x]);
+		
+		// update the z-buffer value with the 1/w of this current pixel
+		z_buffer[(window_width * y) + x] = interpolated_reciprocal_w;
+	}
+	
+
 }
 
 void draw_textured_triangle(

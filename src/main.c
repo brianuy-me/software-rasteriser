@@ -30,9 +30,13 @@ void setup(void) {
 	cull_method = CULL_BACKFACE;
 	
     // memory allocation for color buffer in bytes
-    color_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
+    color_buffer = (uint32_t *)malloc(sizeof(uint32_t) * window_width * window_height);
     if (!color_buffer) { printf("mallac failed to allocate"); }     // check it is not NULL
     
+	z_buffer = (float *)malloc(sizeof(float) * window_width * window_height);
+    if (!z_buffer) { printf("mallac failed to allocate"); }     // check it is not NULL
+	
+	
     color_buffer_texture = SDL_CreateTexture(
         renderer,
         SDL_PIXELFORMAT_RGBA8888,
@@ -285,18 +289,23 @@ void render(void) {
 	array_free(triangles_to_render);
 	
 	render_color_buffer();                                      // update & render texture
-    clear_color_buffer(0x525365FF);                             // set each pixel to yellow (RGBA)
     
+	clear_color_buffer(0x525365FF);                             // set each pixel to yellow (RGBA)
+    clear_z_buffer();
+	
+	
     SDL_RenderPresent(renderer);
 }
 
 void free_resources(void) {
 	free(color_buffer);
     color_buffer = NULL;
-	free(mesh_texture);
-	mesh_texture = NULL;
+	free(z_buffer);
+	z_buffer = NULL;
 	upng_free(png_texture);
 	png_texture = NULL;
+	free(mesh_texture);
+	mesh_texture = NULL;
 	array_free(mesh.faces);
 	mesh.faces = NULL;
 	array_free(mesh.vertices);
