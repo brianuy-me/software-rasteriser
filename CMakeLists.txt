@@ -33,6 +33,7 @@ target_sources(app
 		src/swap.c
 		src/upng.c
 		src/camera.c
+		src/clipping.c
 		$<$<PLATFORM_ID:Windows>:platform/windows/app.rc>
 	PRIVATE
 		FILE_SET app_headers TYPE HEADERS
@@ -49,6 +50,7 @@ target_sources(app
 				include/swap.h
 				include/upng.h
 				include/camera.h
+				include/clipping.h
 )
 
 target_compile_features(app PRIVATE c_std_17)

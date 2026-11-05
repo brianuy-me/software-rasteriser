@@ -16,6 +16,7 @@
 #include <triangle.h>
 #include <texture.h>
 #include <camera.h>
+#include <clipping.h>
 
 #define MAX_TRIANGLES 10000
 triangle_t triangles_to_render[MAX_TRIANGLES];
@@ -53,9 +54,12 @@ void setup(void) {
 	// initialize the perspective projection matrix
 	float fov = (float)M_PI / 3.0f; // the same as 180/3, or 60 degrees
 	float aspect = (float)window_height / (float)window_width;
-	float znear = 0.1f;
-	float zfar = 100.0f;
-	proj_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
+	float z_near = 1.0f;
+	float z_far = 20.0f;
+	proj_matrix = mat4_make_perspective(fov, aspect, z_near, z_far);
+	
+	// initialize frustum planes with a point and normal
+	init_frustum_planes(fov, z_near, z_far);
 	
 	// loads the cube values in the mesh data structure
 	//load_cube_mesh_data();
