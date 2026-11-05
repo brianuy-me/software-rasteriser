@@ -23,6 +23,7 @@ int num_triangles_to_render = 0;
 
 bool is_running = false;
 uint64_t previous_frame_time = 0;
+float delta_time = 0;
 
 mat4_t world_matrix;
 mat4_t proj_matrix;
@@ -86,18 +87,38 @@ void process_input(void) {
 				render_method = RENDER_TEXTURED_WIRE;
 			if (event.key.key == SDLK_C)
 				cull_method = CULL_BACKFACE;
-			if (event.key.key == SDLK_D)
+			if (event.key.key == SDLK_X)
 				cull_method = CULL_NONE;
+			if (event.key.key == SDLK_UP)
+				camera.position.y += 3.0f * delta_time;
+			if (event.key.key == SDLK_DOWN)
+				camera.position.y -= 3.0f * delta_time;
+			if (event.key.key == SDLK_A)
+				camera.yaw += 1.0f * delta_time;
+			if (event.key.key == SDLK_D)
+				camera.yaw -= 1.0f * delta_time;
+			if (event.key.key == SDLK_W) {
+				camera.forward_velocity = vec3_mul(camera.direction, 5.0f * delta_time);
+				camera.position = vec3_add(camera.position, camera.forward_velocity);
+			}
+			if (event.key.key == SDLK_S) {
+				camera.forward_velocity = vec3_mul(camera.direction, 5.0f * delta_time);
+				camera.position = vec3_sub(camera.position, camera.forward_velocity);
+			}
             break;
     }
 }
 
 void update(void) {
-	// 30 fps
+	// 60 fps
 	uint64_t elapsed = SDL_GetTicks() - previous_frame_time;
 	if(elapsed < FRAME_TARGET_TIME) {
 		SDL_Delay((uint32_t)(FRAME_TARGET_TIME - elapsed));
 	}
+	
+	// get a delta time factor converted to seconds to be used to update our game objects
+	delta_time = (SDL_GetTicks() - previous_frame_time) / 1000.0f;
+	
 	previous_frame_time = SDL_GetTicks();
 	
 	// initialize the counter of triangles to render for the current frame
@@ -105,18 +126,21 @@ void update(void) {
 	
 	
 	// change the mesh scale, rotation values per animation frame
-	//mesh.rotation.x += 0.03f;
-	//mesh.rotation.y += 0.00f;
-	//mesh.rotation.z += 0.00f;
-	mesh.translation.z = 4.0f;
+	mesh.rotation.x += 0.0f * delta_time;
+	mesh.rotation.y += 0.0f * delta_time;
+	mesh.rotation.z += 0.0f * delta_time;
+	mesh.translation.z = 5.0f;
 	
-	// change the camera postion per animation frame
-	camera.position.x += 0.008f;
-	camera.position.y += 0.008f;
-	
-	// create the view matrix looking at hardcoded target point
-	vec3_t target = { 0.0f, 0.0f, 4.0f };
+	// initialize the target looking at the positive z-axis
+	vec3_t target = { 0.0f, 0.0f, 1.0f };
+	mat4_t camera_yaw_rotation = mat4_make_rotation_y(camera.yaw);
+	camera.direction = vec3_from_vec4(mat4_mul_vec4(camera_yaw_rotation, vec4_from_vec3(target)));
+
+	// offset the camera position in the direction where the camera is pointing at
+	target = vec3_add(camera.position, camera.direction);
 	vec3_t up_direction = { 0.0f, 1.0f, 0.0f };
+	
+	// create the view matrix
 	view_matrix = mat4_look_at(camera.position, target, up_direction);
 	
 	// create a scale, rotation, and translation matrices that will be used to multiply the mesh vertices
