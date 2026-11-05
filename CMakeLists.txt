@@ -32,6 +32,7 @@ target_sources(app
 		src/texture.c
 		src/swap.c
 		src/upng.c
+		src/camera.c
 		$<$<PLATFORM_ID:Windows>:platform/windows/app.rc>
 	PRIVATE
 		FILE_SET app_headers TYPE HEADERS
@@ -47,6 +48,7 @@ target_sources(app
 				include/texture.h
 				include/swap.h
 				include/upng.h
+				include/camera.h
 )
 
 target_compile_features(app PRIVATE c_std_17)
