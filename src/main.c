@@ -32,7 +32,7 @@ mat4_t view_matrix;
 
 void setup(void) {
 	// initialize render mode and triangle culling method
-	render_method = RENDER_TEXTURED;
+	render_method = RENDER_WIRE;
 	cull_method = CULL_BACKFACE;
 	
     // memory allocation for color buffer in bytes
@@ -63,8 +63,8 @@ void setup(void) {
 	
 	// loads the cube values in the mesh data structure
 	//load_cube_mesh_data();
-	load_obj_file_data(SDL_GetBasePath(), "efa.obj");
-	load_png_texture_data(SDL_GetBasePath(), "efa.png");
+	load_obj_file_data(SDL_GetBasePath(), "cube.obj");
+	load_png_texture_data(SDL_GetBasePath(), "cube.png");
 }
 
 void process_input(void) {
@@ -157,6 +157,8 @@ void update(void) {
 	// loop all triangle faces of our mesh
 	int num_faces = array_length(mesh.faces);
 	for (int i = 0; i < num_faces; i++) {
+		if (i != 4) continue;
+		
 		face_t mesh_face = mesh.faces[i];
 		
 		vec3_t face_vertices[3];
@@ -219,6 +221,22 @@ void update(void) {
 				continue;
 			}
 		}
+		
+		// create a polygon from the original transform triangle to be clipped
+		polygon_t polygon = create_polygon_from_triangle(
+			vec3_from_vec4(transformed_vertices[0]),
+			vec3_from_vec4(transformed_vertices[1]),
+			vec3_from_vec4(transformed_vertices[2])
+		);
+		
+		// clip the polygon and returns a new polygon with potential new vertices
+		clip_polygon(&polygon);
+		
+		//////////////
+		printf("number of polygon vertices after clipping %d\n", polygon.num_vertices);
+		/////////////
+		
+		// after clipping, we need to break the polygon into triangles
 		
 		vec4_t projected_points[3];
 		
