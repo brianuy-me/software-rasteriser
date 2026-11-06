@@ -4,29 +4,31 @@
 #define NUM_PLANES 6
 plane_t frustum_planes[NUM_PLANES];
 
-void init_frustum_planes(float fov, float z_near, float z_far) {
-	float cos_half_fov = cosf(fov / 2.0f);
-	float sin_half_fov = sinf(fov / 2.0f);
+void init_frustum_planes(float fovx, float fovy, float z_near, float z_far) {
+	float cos_half_fovx = cosf(fovx / 2.0f);
+	float sin_half_fovx = sinf(fovx / 2.0f);
+	float cos_half_fovy = cosf(fovy / 2.0f);
+	float sin_half_fovy = sinf(fovy / 2.0f);
 	
 	frustum_planes[LEFT_FRUSTUM_PLANE].point = vec3_new(0.0f, 0.0f, 0.0f);
-	frustum_planes[LEFT_FRUSTUM_PLANE].normal.x = cos_half_fov;
+	frustum_planes[LEFT_FRUSTUM_PLANE].normal.x = cos_half_fovx;
 	frustum_planes[LEFT_FRUSTUM_PLANE].normal.y = 0.0f;
-	frustum_planes[LEFT_FRUSTUM_PLANE].normal.z = sin_half_fov;
+	frustum_planes[LEFT_FRUSTUM_PLANE].normal.z = sin_half_fovx;
 
 	frustum_planes[RIGHT_FRUSTUM_PLANE].point = vec3_new(0.0f, 0.0f, 0.0f);
-	frustum_planes[RIGHT_FRUSTUM_PLANE].normal.x = -cos_half_fov;
+	frustum_planes[RIGHT_FRUSTUM_PLANE].normal.x = -cos_half_fovx;
 	frustum_planes[RIGHT_FRUSTUM_PLANE].normal.y = 0.0f;
-	frustum_planes[RIGHT_FRUSTUM_PLANE].normal.z = sin_half_fov;
+	frustum_planes[RIGHT_FRUSTUM_PLANE].normal.z = sin_half_fovx;
 
 	frustum_planes[TOP_FRUSTUM_PLANE].point = vec3_new(0.0f, 0.0f, 0.0f);
 	frustum_planes[TOP_FRUSTUM_PLANE].normal.x = 0.0f;
-	frustum_planes[TOP_FRUSTUM_PLANE].normal.y = -cos_half_fov;
-	frustum_planes[TOP_FRUSTUM_PLANE].normal.z = sin_half_fov;
+	frustum_planes[TOP_FRUSTUM_PLANE].normal.y = -cos_half_fovy;
+	frustum_planes[TOP_FRUSTUM_PLANE].normal.z = sin_half_fovy;
 
 	frustum_planes[BOTTOM_FRUSTUM_PLANE].point = vec3_new(0.0f, 0.0f, 0.0f);
 	frustum_planes[BOTTOM_FRUSTUM_PLANE].normal.x = 0.0f;
-	frustum_planes[BOTTOM_FRUSTUM_PLANE].normal.y = cos_half_fov;
-	frustum_planes[BOTTOM_FRUSTUM_PLANE].normal.z = sin_half_fov;
+	frustum_planes[BOTTOM_FRUSTUM_PLANE].normal.y = cos_half_fovy;
+	frustum_planes[BOTTOM_FRUSTUM_PLANE].normal.z = sin_half_fovy;
 
 	frustum_planes[NEAR_FRUSTUM_PLANE].point = vec3_new(0.0f, 0.0f, z_near);
 	frustum_planes[NEAR_FRUSTUM_PLANE].normal.x = 0.0f;

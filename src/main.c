@@ -52,14 +52,17 @@ void setup(void) {
     );
 	
 	// initialize the perspective projection matrix
-	float fov = (float)M_PI / 3.0f; // the same as 180/3, or 60 degrees
-	float aspect = (float)window_height / (float)window_width;
+	float aspectx = (float)window_width / (float)window_height;
+	float aspecty = (float)window_height / (float)window_width;
+	float fovy = (float)M_PI / 3.0f; // the same as 180/3, or 60 degrees
+	float fovx = atanf(tanf(fovy / 2.0f) * aspectx) * 2.0f;
+	
 	float z_near = 1.0f;
 	float z_far = 20.0f;
-	proj_matrix = mat4_make_perspective(fov, aspect, z_near, z_far);
+	proj_matrix = mat4_make_perspective(fovy, aspecty, z_near, z_far);
 	
 	// initialize frustum planes with a point and normal
-	init_frustum_planes(fov, z_near, z_far);
+	init_frustum_planes(fovx, fovy, z_near, z_far);
 	
 	// loads the cube values in the mesh data structure
 	//load_cube_mesh_data();
