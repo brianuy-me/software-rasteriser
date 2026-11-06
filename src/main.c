@@ -52,17 +52,16 @@ void setup(void) {
     );
 	
 	// initialize the perspective projection matrix
-	float aspectx = (float)window_width / (float)window_height;
-	float aspecty = (float)window_height / (float)window_width;
-	float fovy = (float)M_PI / 3.0f; // the same as 180/3, or 60 degrees
-	float fovx = atanf(tanf(fovy / 2.0f) * aspectx) * 2.0f;
-	
+	float aspect_y = (float)window_height / (float)window_width;
+	float aspect_x = (float)window_width / (float)window_height;
+	float fov_y = (float)M_PI / 3.0f; // the same as 180/3, or 60 degrees
+	float fov_x = atanf(tanf(fov_y / 2.0f) * aspect_x) * 2.0f;
 	float z_near = 1.0f;
 	float z_far = 20.0f;
-	proj_matrix = mat4_make_perspective(fovy, aspecty, z_near, z_far);
+	proj_matrix = mat4_make_perspective(fov_y, aspect_y, z_near, z_far);
 	
 	// initialize frustum planes with a point and normal
-	init_frustum_planes(fovx, fovy, z_near, z_far);
+	init_frustum_planes(fov_x, fov_y, z_near, z_far);
 	
 	// loads the cube values in the mesh data structure
 	//load_cube_mesh_data();
@@ -227,7 +226,10 @@ void update(void) {
 		polygon_t polygon = create_polygon_from_triangle(
 			vec3_from_vec4(transformed_vertices[0]),
 			vec3_from_vec4(transformed_vertices[1]),
-			vec3_from_vec4(transformed_vertices[2])
+			vec3_from_vec4(transformed_vertices[2]),
+			mesh_face.a_uv,
+			mesh_face.b_uv,
+			mesh_face.c_uv
 		);
 		
 		// clip the polygon and returns a new polygon with potential new vertices
@@ -272,12 +274,12 @@ void update(void) {
 				.points = {
 					{ projected_points[0].x, projected_points[0].y, projected_points[0].z, projected_points[0].w },
 					{ projected_points[1].x, projected_points[1].y, projected_points[1].z, projected_points[1].w },
-					{ projected_points[2].x, projected_points[2].y, projected_points[2].z, projected_points[2].w },
+					{ projected_points[2].x, projected_points[2].y, projected_points[2].z, projected_points[2].w }
 				},
 				.texcoords = {
-					{ mesh_face.a_uv.u, mesh_face.a_uv.v },
-					{ mesh_face.b_uv.u, mesh_face.b_uv.v },
-					{ mesh_face.c_uv.u, mesh_face.c_uv.v }
+					{ triangle_after_clipping.texcoords[0].u, triangle_after_clipping.texcoords[0].v },
+					{ triangle_after_clipping.texcoords[1].u, triangle_after_clipping.texcoords[1].v },
+					{ triangle_after_clipping.texcoords[2].u, triangle_after_clipping.texcoords[2].v }
 				},
 				.color = triangle_color
 			};

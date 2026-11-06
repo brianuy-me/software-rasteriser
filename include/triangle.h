@@ -16,7 +16,6 @@ typedef struct {
 	uint32_t color;
 } face_t;
 
-
 typedef struct {
 	vec4_t points[3];
 	tex2_t texcoords[3];
