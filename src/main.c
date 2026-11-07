@@ -30,10 +30,14 @@ mat4_t world_matrix;
 mat4_t proj_matrix;
 mat4_t view_matrix;
 
+
 void setup(void) {
 	// initialize render mode and triangle culling method
-	set_render_method(RENDER_WIRE);
+	set_render_method(RENDER_TEXTURED);
 	set_cull_method(CULL_BACKFACE);
+	
+	// initialize the scene light direction
+	init_light(vec3_new(0.0f, 0.0f, 1.0f));
 	
 	// initialize the perspective projection matrix
 	float aspect_y = (float)get_window_height() / (float)get_window_width();
@@ -98,29 +102,29 @@ void process_input(void) {
 					break;
 				}
 				if (event.key.key == SDLK_UP) {
-					camera.position.y += 3.0f * delta_time;
+					rotate_camera_pitch(-1.0f * delta_time);
 					break;
 				}
 				if (event.key.key == SDLK_DOWN) {
-					camera.position.y -= 3.0f * delta_time;
+					rotate_camera_pitch(1.0f * delta_time);
 					break;
 				}
-				if (event.key.key == SDLK_A) {
-					camera.yaw += 1.0f * delta_time;
+				if (event.key.key == SDLK_RIGHT) {
+					rotate_camera_yaw(1.0f * delta_time);
 					break;
 				}
-				if (event.key.key == SDLK_D) {
-					camera.yaw -= 1.0f * delta_time;
+				if (event.key.key == SDLK_LEFT) {
+					rotate_camera_yaw(-1.0f * delta_time);
 					break;
 				}
 				if (event.key.key == SDLK_W) {
-					camera.forward_velocity = vec3_mul(camera.direction, 5.0f * delta_time);
-					camera.position = vec3_add(camera.position, camera.forward_velocity);
+					update_camera_forward_velocity(vec3_mul(get_camera_direction(), 5.0f * delta_time));
+					update_camera_position(vec3_add(get_camera_position(), get_camera_forward_velocity()));
 					break;
 				}
 				if (event.key.key == SDLK_S) {
-					camera.forward_velocity = vec3_mul(camera.direction, 5.0f * delta_time);
-					camera.position = vec3_sub(camera.position, camera.forward_velocity);
+					update_camera_forward_velocity(vec3_mul(get_camera_direction(), 5.0f * delta_time));
+					update_camera_position(vec3_sub(get_camera_position(), get_camera_forward_velocity()));
 					break;
 				}
 				break;
@@ -152,15 +156,13 @@ void update(void) {
 	
 	// initialize the target looking at the positive z-axis
 	vec3_t target = { 0.0f, 0.0f, 1.0f };
-	mat4_t camera_yaw_rotation = mat4_make_rotation_y(camera.yaw);
-	camera.direction = vec3_from_vec4(mat4_mul_vec4(camera_yaw_rotation, vec4_from_vec3(target)));
+	mat4_t camera_yaw_rotation = mat4_make_rotation_y(get_camera_yaw());
+	update_camera_direction(vec3_from_vec4(mat4_mul_vec4(camera_yaw_rotation, vec4_from_vec3(target))));
 
 	// offset the camera position in the direction where the camera is pointing at
-	target = vec3_add(camera.position, camera.direction);
-	vec3_t up_direction = { 0.0f, 1.0f, 0.0f };
-	
-	// create the view matrix
-	view_matrix = mat4_look_at(camera.position, target, up_direction);
+	target = get_camera_lookat_target();
+	vec3_t up_direction = vec3_new(0.0f, 1.0f, 0.0f);
+	view_matrix = mat4_look_at(get_camera_position(), target, up_direction);
 	
 	// create a scale, rotation, and translation matrices that will be used to multiply the mesh vertices
 	mat4_t scale_matrix = mat4_make_scale(mesh.scale.x, mesh.scale.y, mesh.scale.z);
@@ -278,7 +280,7 @@ void update(void) {
 			}
 			
 			// calculate the shade intensity based on how aligned is the normal and the inverse of the light ray
-			float light_intensity_factor = -vec3_dot(normal, light.direction);
+			float light_intensity_factor = -vec3_dot(normal, get_light_direction());
 			
 			// calculate the triangle color based on the light angle
 			uint32_t triangle_color = light_apply_intensity(mesh_face.color, light_intensity_factor);
@@ -370,7 +372,7 @@ void free_resources(void) {
 int main(int argc, char *argv[]) {
     (void)argc;
     (void)argv;
-    
+    	
     is_running = initialize_window();
     
     setup();
