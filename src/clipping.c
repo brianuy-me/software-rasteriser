@@ -4,11 +4,11 @@
 #define NUM_PLANES 6
 plane_t frustum_planes[NUM_PLANES];
 
-void init_frustum_planes(float fovx, float fovy, float z_near, float z_far) {
-	float cos_half_fov_x = cosf(fovx / 2.0f);
-	float sin_half_fov_x = sinf(fovx / 2.0f);
-	float cos_half_fov_y = cosf(fovy / 2.0f);
-	float sin_half_fov_y = sinf(fovy / 2.0f);
+void init_frustum_planes(float fov_x, float fov_y, float z_near, float z_far) {
+	float cos_half_fov_x = cosf(fov_x / 2.0f);
+	float sin_half_fov_x = sinf(fov_x / 2.0f);
+	float cos_half_fov_y = cosf(fov_y / 2.0f);
+	float sin_half_fov_y = sinf(fov_y / 2.0f);
 	
 	frustum_planes[LEFT_FRUSTUM_PLANE].point = vec3_new(0.0f, 0.0f, 0.0f);
 	frustum_planes[LEFT_FRUSTUM_PLANE].normal.x = cos_half_fov_x;
